@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 配置主配置文件的dtd约束 -->
+<!DOCTYPE configuration
+ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+
+
+	<settings>
+		<!-- 使用spring后，如果需要输出mybatis的日志，需要如下的配置 -->
+		<setting name="logImpl" value="log4j" />
+		<setting name="mapUnderscoreToCamelCase" value="true" />
+	</settings>
+
+	<typeAliases>
+		<typeAlias type="com.qianfeng.entity.SysUser"
+			alias="sysUser" />
+		<typeAlias type="com.qianfeng.entity.SysRole"
+			alias="sysRole" />
+		<typeAlias type="com.qianfeng.entity.SysRight"
+			alias="sysRight" />
+		<typeAlias type="com.qianfeng.entity.SysRoleRight"
+			alias="sysRoleRight" />
+
+	</typeAliases>
+	<!-- plugins在配置文件中的位置必须符合要求，否则会报错，顺序如下: properties?, settings?, typeAliases?, 
+		typeHandlers?, objectFactory?,objectWrapperFactory?, plugins?, environments?, 
+		databaseIdProvider?, mappers? -->
+	<plugins>
+		<!-- com.github.pagehelper为PageHelper类所在包名 -->
+		<plugin interceptor="com.github.pagehelper.PageInterceptor">
+			<!-- 使用下面的方式配置参数，后面会有所有的参数介绍 -->
+			<property name="helperDialect" value="mysql" />
+		</plugin>
+	</plugins>
+
+</configuration>

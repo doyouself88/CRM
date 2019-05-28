@@ -1,0 +1,150 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>营销管理</title>
+<link href="../css/stylesheet.css" rel="stylesheet" type="text/css" />
+<link href="../css/style.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" type="text/css" href="../ztree/css/zTreeStyle/zTreeStyle.css" />
+<script type="text/javascript" src="../js/javascript.js"></script>
+<script type="text/javascript" src="../js/jquery-1.3.2.min.js"></script>
+<script type="text/javascript" src="../ztree/js/jquery.ztree.all.min.js"></script>
+</head>
+
+<body>
+<div style="padding:5px;">
+  <div class="txt" style="padding-top:3px;" >当前位置：系统设置&nbsp;&gt;&nbsp;角色权限管理
+    <hr class="hr1" />
+  </div>
+  <div class="operation_button">
+  	<a href="#" title="返回" onclick="back()">返回</a>
+  </div>
+  <div class="out_bg">
+    <div class="in_bg">
+      <table border="0" cellpadding="0" cellspacing="0" class="table_input txt">
+        <tr>
+          <td width="50">角色</td>
+          <td width="853">
+          	<select name="roltId">
+            	<option>--请选择角色--</option>
+                
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td width="30">所属权限:</td>
+          <td width="350">
+          		
+			<div style="height:200px;width:200px">
+			    <ul id="regionZTree" class="ztree"></ul>
+			</div>
+          </td>	
+        </tr>
+      </table>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+	var zTreeObj = null;
+	$(function(){
+		$.ajax({
+			type:"get",
+			url:"/crm/role/list.do",
+			dataType:"json",
+			success:function(data){
+				if(data.code == 1){
+					var infos = data.info;
+					$(infos).each(function(){
+						var html = '<option value="' + this.roleId + '">' + this.roleName + '</option>';
+						$("select").append($(html));
+					
+					})
+				}
+			}
+		})
+		
+		
+	})
+</script>
+
+<script type="text/javascript">
+
+$(function(){
+	var setting = {
+	        /* view: {
+	            dblClickExpand: false,//双击节点时，是否自动展开父节点的标识
+	            showLine: true,//是否显示节点之间的连线
+	            fontCss:{'color':'black','font-weight':'bold'},//字体样式函数
+	            selectedMulti: true //设置是否允许同时选中多个节点
+	        }, */
+	        check:{
+	            chkboxType: { "Y": "ps", "N": "ps" },
+	            chkStyle: "checkbox",//复选框类型
+	            enable: true //每个节点上是否显示 CheckBox
+	        },
+	        data: {
+	            simpleData: {//简单数据模式
+	                enable:true,
+	                idKey: "rightId",
+	                pIdKey: "rightParentCode",
+	                //rootPId: -1,
+	                
+	            },
+	            key: { name: "rightName" }//zTree 节点数据保存节点名称的属性名称 默认值："name"
+	        },
+	        callback: {
+	        	//onCheck:onCheck
+	        }
+	    };
+	$.fn.zTree.init($("#regionZTree"), setting);
+})
+	
+
+</script>
+
+<script type="text/javascript">
+
+	
+	function changeRight(){
+		var roleId = $("select").val();
+		var zTree = $.fn.zTree.getZTreeObj("regionZTree");
+		// 获取选中的节点
+		var nodes = zTree.getCheckedNodes(true);
+		var checkNodeArr = [];
+		for(var i = 0; i < nodes.length; i++){
+			// 选中的节点的id放到数组里
+			checkNodeArr.push(nodes[i].rightCode);
+		}
+		//window.parent.leftFrame.location.reload();
+
+	}
+	
+	$("select").change(function(){
+		//alert(this.value);
+		$.ajax({
+			type:"get",
+			url:"/crm/right/tree.do?roleId=" + this.value,
+			dataType:"json",
+			success:function(data){
+				//zTreeObj = $.fn.zTree.init($("#regionZTree"), setting, data.info);
+				var zTree = $.fn.zTree.getZTreeObj("regionZTree");
+				// 获取所有根节点
+				var nodes = zTree.getNodes();
+				// 删除节点
+				for (var i= nodes.length - 1; i >=0; i--) {
+					zTree.removeNode(nodes[i]);
+				}
+				// 从根节点添加所有一级节点，第一个参数设为null
+				zTree.addNodes(null, data.info, true);
+				// 展开所有节点
+				zTree.expandAll(true);
+				//count();
+			}
+		})
+	})
+</script>
+
+
+
+</body>
+</html>

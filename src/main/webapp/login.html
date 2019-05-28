@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title> 用户登录</title>
+		<link rel="stylesheet" href="css/bootstrap.min.css" />
+		<script type="text/javascript" src="js/jquery.min.js" ></script>
+		<script type="text/javascript" src="js/bootstrap.min.js" ></script>
+		<script type="text/javascript" src="js/dist/jquery.validate.min.js"></script>
+	</head>
+	<body>
+		<script type="text/javascript">
+		$(function() {
+			$("#eye").click(function() {
+				if ($("#password").attr("type")=="password") {
+					$("#password").attr("type","text");
+					$("#eye").attr("class","glyphicon glyphicon-eye-close");
+				} else {
+					$("#password").attr("type","password");
+					$("#eye").attr("class","glyphicon glyphicon-eye-open");
+				}
+			})
+		})
+	</script>
+	<style type="text/css">
+		#main{
+			/*position: absolute;*/
+			width: 400px;
+			height: 300px;
+			/*left:50%;
+			top:40%;
+			margin-left: -200px;
+			margin-top: -100px;*/
+			margin: 100px auto;
+		}
+	</style>
+		<div id="main" class="panel panel-primary">
+			<div class="panel-heading">
+				<div class="panel-title">
+					登录CRM
+				</div>
+			</div>
+			<div class="panel-body">
+				<br>
+				<div>
+					<form onsubmit="return false;">
+					<div class="form-group">
+						<label>用户名:</label>
+						<input type="text" name="usrName" id="" class="form-control" placeholder="请输入用户名"/>
+					</div>
+					<div class="form-group">
+						<label>密&nbsp;&nbsp;&nbsp;码:</label>
+						<div class="input-group">
+							<input type="password" name="usrPassword" id="password" class="form-control"  placeholder="请输入密码"/>
+							<span class="input-group-addon">
+								<span class="glyphicon glyphicon-eye-open" id="eye"></span>
+							</span>
+						</div>
+					</div>
+					<div class="form-group" style="text-align: center;">
+						<input type="submit" value="登录" class="btn btn-primary">
+						<input type="reset" value="重置" class="btn btn-default">
+					</div>
+				</form>
+					
+				<span><a href="register.html">成为会员</a></span>
+				</div>
+			</div>
+		</div>
+	
+		<script type="text/javascript">
+		$(function() {
+			$("form").validate({
+				//干预提交事件，使用submitHandler
+				submitHandler: function() {
+					$.ajax({
+						type:"post",
+						url:"login.do",
+						data:$("form").serialize(),
+						dataType:"json",
+						success:function(data){
+							if(data.code == 1){
+								window.location.href = "index.html";
+							}else{
+								alert(data.info);
+							}
+						},
+						error:function(){
+						}
+					});
+				},
+	
+				//验证规则
+				rules:{
+					u_name: {
+						required:true,
+					},
+					u_password: {
+						required:true,
+					}
+				},
+				messages:{
+					u_name: {
+						required:"用户名不能为空"
+					},
+					u_password: {
+						required:"密码不能为空",
+						minlength:3,
+						maxlength:10
+					}
+				}
+			});
+		});
+		</script>
+	</body>
+</html>
+

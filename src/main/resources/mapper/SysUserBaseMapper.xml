@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qianfeng.dao.SysUserDao">
+	<resultMap id="SysUserBaseMap"
+		type="com.qianfeng.entity.SysUser">
+		<id column="usr_id" property="usrId" />
+		<result column="usr_name" property="usrName" />
+		<result column="usr_password" property="usrPassword" />
+		<result column="usr_role_id" property="usrRoleId" />
+		<result column="usr_flag" property="usrFlag" />
+	</resultMap>
+	
+	<resultMap id="VSysUserBaseMap"
+		type="com.qianfeng.vo.VSysUser">
+		<id column="usr_id" property="usrId" />
+		<result column="usr_name" property="usrName" />
+		<result column="usr_flag" property="usrFlag" />
+		<association property="role" resultMap="com.qianfeng.dao.SysRoleDao.SysRoleBaseMap">
+		</association>
+	</resultMap>
+
+	<sql id="columnList">
+		usr_id,
+		usr_name,
+		usr_password,
+		usr_role_id,
+		usr_flag
+	</sql>
+
+	<insert id="add" useGeneratedKeys="true" keyProperty="usrId"
+		parameterType="com.qianfeng.entity.SysUser">
+		INSERT INTO
+		sys_user
+		(
+		usr_id,
+		usr_name,
+		usr_password,
+		usr_role_id,
+		usr_flag
+		)
+		VALUES
+		(
+		#{usrId},
+		#{usrName},
+		#{usrPassword},
+		#{usrRoleId},
+		#{usrFlag}
+		)
+	</insert>
+
+	<update id="update" parameterType="com.qianfeng.entity.SysUser">
+		UPDATE
+		sys_user
+		SET
+		usr_id =
+		#{usrId},
+		usr_name = #{usrName},
+		usr_password = #{usrPassword},
+		usr_role_id = #{usrRoleId},
+		usr_flag = #{usrFlag}
+		WHERE
+		usr_id=#{usrId}
+	</update>
+
+	<delete id="remove" parameterType="String">
+		DELETE FROM sys_user WHERE
+		usr_id=#{usrId}
+	</delete>
+
+	<select id="getByUsrId" parameterType="java.lang.String"
+		resultMap="SysUserBaseMap">
+		SELECT
+		<include refid="columnList" />
+		FROM
+		sys_user
+		WHERE
+		usr_id=#{usrId}
+	</select>
+
+	<select id="selectByName" parameterType="string"
+		resultType="sysUser">
+		select * from sys_user where usr_name=#{usrName}
+	</select>
+
+	<select id="selectAll" resultMap="VSysUserBaseMap">
+		select u.usr_id,u.usr_name,u.usr_flag,r.role_id,r.role_name from sys_user u inner join sys_role r on u.usr_role_id=r.role_id
+	</select>
+	
+	
+  <insert id="insertUsers" parameterType="list">
+  		insert into sys_user(usr_name, usr_password, usr_role_id, usr_flag) values
+  		<foreach collection="list" item="user" separator=",">
+  			(#{user.usrName}, #{user.usrPassword}, #{user.usrRoleId}, #{user.usrFlag})
+  		</foreach>
+  </insert>
+
+</mapper>

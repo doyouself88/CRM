@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qianfeng.dao.SysRightDao">
+	<resultMap id="SysRightBaseMap"
+		type="com.qianfeng.entity.SysRight">
+		<id column="right_id" property="rightId" />
+		<result column="right_parent_code" property="rightParentCode" />
+		<result column="right_name" property="rightName" />
+		<result column="right_url" property="rightUrl" />
+		<result column="right_node_type" property="rightNodeType" />
+		<result column="right_flag" property="rightFlag" />
+	</resultMap>
+
+	<sql id="columnList">
+		right_id,
+		right_parent_code,
+		right_name,
+		right_url,
+		right_node_type,
+		right_flag
+	</sql>
+
+	<insert id="add" useGeneratedKeys="true" keyProperty="rightId"
+		parameterType="com.qianfeng.entity.SysRight">
+		INSERT INTO
+		sys_right
+		(
+		right_parent_code,
+		right_name,
+		right_url,
+		right_node_type,
+		right_flag
+		)
+		VALUES
+		(
+		#{rightParentCode},
+		#{rightName},
+		#{rightUrl},
+		#{rightNodeType},
+		#{rightFlag}
+		)
+	</insert>
+
+	<update id="update" parameterType="com.qianfeng.entity.SysRight">
+		UPDATE
+		sys_right
+		SET
+		right_parent_code = #{rightParentCode},
+		right_name = #{rightName},
+		right_url = #{rightUrl},
+		right_node_type = #{rightNodeType},
+		right_flag = #{rightFlag}
+		WHERE
+		right_id=#{rightId}
+	</update>
+
+	<select id="getByRightId" parameterType="java.lang.String"
+		resultMap="SysRightBaseMap">
+		SELECT
+		<include refid="columnList" />
+		FROM
+		sys_right
+		WHERE
+		right_id=#{rightId}
+	</select>
+
+	<resultMap type="com.qianfeng.vo.VMenuInfo" id="menuMap">
+		<id column="right_id" property="menuId" />
+		<result column="right_name" property="menuName" />
+		<result column="right_url" property="menuUrl" />
+		<collection property="menuList"
+			javaType="java.util.ArrayList" ofType="com.qianfeng.vo.VMenuInfo">
+			<id column="ccode" property="menuId" />
+			<result column="cname" property="menuName" />
+			<result column="curl" property="menuUrl" />
+		</collection>
+
+	</resultMap>
+
+
+	<select id="selectMenu" parameterType="int" resultMap="menuMap">
+		SELECT
+		p.right_id,
+		p.right_name,
+		p.right_url,
+		c.right_id ccode,
+		c.right_name cname,
+		c.right_url curl
+		FROM
+		sys_right p
+		INNER JOIN
+		sys_right c ON c.right_parent_code = p.right_id
+		INNER JOIN
+		sys_role_right rr ON rr.rf_right_code = c.right_id
+		WHERE
+		rr.rf_role_id =#{roleId} AND c.right_flag = 1;
+	</select>
+	
+	<select id="selectAllTreeNode" resultType="com.qianfeng.vo.VTreeInfo">
+		select right_id,right_parent_code,right_name from sys_right
+	</select>
+	<select id="selectCheckNodeId" parameterType="int" resultType="int">
+		select rf_right_code from sys_role_right where rf_role_id=#{roleId}
+	</select>
+	
+
+	<delete id="deleteById" parameterType="int">
+		DELETE FROM sys_role_right WHERE rf_role_id=#{roleId}
+	</delete>
+	
+	<insert id="insertRoleAndRight" parameterType="map">
+		insert sys_role_right(rf_role_id,rf_right_code) values
+		<foreach collection="rightIds" item="rightId" separator=","/>
+	</insert>
+
+</mapper>

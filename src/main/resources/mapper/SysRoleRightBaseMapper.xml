@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qianfeng.dao.SysRoleRightDao">
+    <resultMap id="SysRoleRightBaseMap" type="com.qianfeng.entity.SysRoleRight">
+        <id column="rf_id" property="rfId"/>
+        <result column="rf_role_id" property="rfRoleId"/>
+        <result column="rf_right_code" property="rfRightCode"/>
+    </resultMap>
+
+    <sql id="columnList">
+            rf_id,
+            rf_role_id,
+            rf_right_code
+    </sql>
+
+    <insert id="add" useGeneratedKeys="true" keyProperty="rfId" parameterType="com.qianfeng.entity.SysRoleRight">
+        INSERT INTO
+    sys_role_right
+        (
+                        rf_id,
+                        rf_role_id,
+                        rf_right_code
+        )
+        VALUES
+        (
+                            #{rfId},
+                            #{rfRoleId},
+                            #{rfRightCode}
+        )
+    </insert>
+
+    <update id="update"  parameterType="com.qianfeng.entity.SysRoleRight">
+        UPDATE
+    sys_role_right
+        SET
+                    rf_id = #{rfId},
+                    rf_role_id = #{rfRoleId},
+                    rf_right_code = #{rfRightCode}
+        WHERE
+    rf_id=#{rfId}
+    </update>
+
+    <delete id="remove" parameterType="String">
+        DELETE FROM sys_role_right WHERE rf_id=#{rfId}
+    </delete>
+
+    <select id="getByRfId" parameterType="java.lang.String" resultMap="SysRoleRightBaseMap">
+        SELECT
+        <include refid="columnList"/>
+        FROM
+    sys_role_right
+        WHERE
+    rf_id=#{rfId}
+    </select>
+
+</mapper>
